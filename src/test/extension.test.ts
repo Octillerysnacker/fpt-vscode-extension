@@ -7,6 +7,7 @@
 import * as assert from 'assert';
 import { DotNetCoreFPTAppMapper, promisifiedExec } from '../DotNetCoreFPTAppMapper';
 import { FPTException } from '../FPTException';
+import { StringDecoder } from 'string_decoder';
 
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
@@ -39,6 +40,16 @@ suite("DotNetCoreFptAppMapper", function() {
             let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
             
             return assert.rejects(function(){ return mapper.runCommand(); },exception);
+        });
+        test("return deserialized object from serialized string",async function(){
+            let object : any = {Lmfao:"bruh",IsNerd:true};
+            let fakeExec : promisifiedExec = async function(command: string):Promise<{stdout:string,stderr:string}>{
+                let serializedObject = JSON.stringify(object);
+                return {stdout:serializedObject,stderr:""};
+            };
+            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
+
+            return assert.deepStrictEqual(await mapper.runCommand(),object);
         });
     });
     
