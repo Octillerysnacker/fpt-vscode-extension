@@ -1,7 +1,7 @@
 export interface FPTException{
     readonly Type : string;
     readonly Message : string;
-    readonly InnerException : FPTException;
+    readonly InnerException : FPTException | null;
 }
 export function isFPTException(object : any) : object is FPTException{
     let testObject = object as FPTException;

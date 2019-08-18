@@ -5,6 +5,8 @@
 
 // The module 'assert' provides assertion methods from node
 import * as assert from 'assert';
+import { DotNetCoreFPTAppMapper, promisifiedExec } from '../DotNetCoreFPTAppMapper';
+import { FPTException } from '../FPTException';
 
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
@@ -22,5 +24,22 @@ suite("Extension Tests", function () {
 });
 suite("DotNetCoreFptAppMapper", function() {
 
-    test("");
+    suite("runCommand should",function(){
+
+        test("throw the serialized FPTException recieved",function(){
+            let exception : FPTException = {
+                Type:"type",
+                Message:"message",
+                InnerException: null
+            };
+            let fakeExec : promisifiedExec = async function(command : string):Promise<{stdout:string,stderr:string}>{
+                let serializedException = JSON.stringify(exception);
+                return {stdout:serializedException,stderr:""};
+            };
+            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
+            
+            return assert.rejects(function(){ return mapper.runCommand(); },exception);
+        });
+    });
+    
 });

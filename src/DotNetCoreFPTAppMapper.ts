@@ -4,7 +4,8 @@ import { promisify } from "util";
 import { isFPTException, FPTException } from "./FPTException";
 import { Level, isLevel } from "./Level";
 
-type promisifiedExec = {(command: string): Promise<{stdout: string, stderr: string}>};
+export type promisifiedExec = {(command: string): Promise<{stdout: string, stderr: string}>};
+
 export class DotNetCoreFPTAppMapper implements FPTAppMapper{
     private readonly appPath : string;
     private readonly promisifiedExec : promisifiedExec;
