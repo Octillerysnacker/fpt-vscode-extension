@@ -70,6 +70,28 @@ suite("DotNetCoreFptAppMapper", function() {
             
             return assert.rejects(function(){return mapper.getLevels();},Error("A bad object was recieved from runCommand."));
         });
+        test("return serialized level array", async function(){
+            let object : Level[] = [{
+                Name:"yodel",
+                Id:"yodel",
+                InstructionsFilepath:"yodel",
+                VerifierFilepath:"yodel",
+                FolderPath:"yodel"
+            },{
+                Name:"Bojack",
+                Id:"Horseman",
+                InstructionsFilepath:"Mr",
+                VerifierFilepath:"Adult",
+                FolderPath:"Man"
+            }];
+            let fakeExec : promisifiedExec = async function(command:string):Promise<{stdout:string,stderr:string}>{
+                let serializedObject = JSON.stringify(object);
+                return {stdout:serializedObject,stderr:""};
+            };
+            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
+
+            return assert.deepStrictEqual( await mapper.getLevels(),object);
+        });
     });
     
 });
