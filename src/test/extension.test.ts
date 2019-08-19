@@ -25,6 +25,12 @@ suite("Extension Tests", function () {
 });
 suite("DotNetCoreFptAppMapper", function() {
 
+    function createFakeExec(output : any){
+        return async function(command: string):Promise<{stdout:string,stderr:string}>{
+            let serializedObject = JSON.stringify(output);
+            return {stdout:serializedObject,stderr:""};
+        };
+    }
     suite("runCommand should",function(){
 
         test("throw the serialized FPTException recieved",function(){
@@ -33,20 +39,14 @@ suite("DotNetCoreFptAppMapper", function() {
                 Message:"message",
                 InnerException: null
             };
-            let fakeExec : promisifiedExec = async function(command : string):Promise<{stdout:string,stderr:string}>{
-                let serializedException = JSON.stringify(exception);
-                return {stdout:serializedException,stderr:""};
-            };
+            let fakeExec = createFakeExec(exception);
             let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
             
             return assert.rejects(function(){ return mapper.runCommand(); },exception);
         });
         test("return deserialized object from serialized string",async function(){
             let object : any = {Lmfao:"bruh",IsNerd:true};
-            let fakeExec : promisifiedExec = async function(command: string):Promise<{stdout:string,stderr:string}>{
-                let serializedObject = JSON.stringify(object);
-                return {stdout:serializedObject,stderr:""};
-            };
+            let fakeExec =createFakeExec(object);
             let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
 
             return assert.deepStrictEqual(await mapper.runCommand(),object);
@@ -62,10 +62,7 @@ suite("DotNetCoreFptAppMapper", function() {
                 FolderPath: "yodel"
             };
             let object : any[] = [level,"meep"];
-            let fakeExec : promisifiedExec = async function(command: string):Promise<{stdout:string,stderr:string}>{
-                let serializedObject = JSON.stringify(object);
-                return {stdout:serializedObject,stderr:""};
-            };
+            let fakeExec = createFakeExec(object);
             let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
             
             return assert.rejects(function(){return mapper.getLevels();},Error("A bad object was recieved from runCommand."));
@@ -84,10 +81,7 @@ suite("DotNetCoreFptAppMapper", function() {
                 VerifierFilepath:"Adult",
                 FolderPath:"Man"
             }];
-            let fakeExec : promisifiedExec = async function(command:string):Promise<{stdout:string,stderr:string}>{
-                let serializedObject = JSON.stringify(object);
-                return {stdout:serializedObject,stderr:""};
-            };
+            let fakeExec = createFakeExec(object);
             let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
 
             return assert.deepStrictEqual( await mapper.getLevels(),object);
