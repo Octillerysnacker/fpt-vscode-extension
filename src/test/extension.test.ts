@@ -8,6 +8,7 @@ import * as assert from 'assert';
 import { DotNetCoreFPTAppMapper, promisifiedExec } from '../DotNetCoreFPTAppMapper';
 import { FPTException } from '../FPTException';
 import { Level } from '../Level';
+import { isNullOrUndefined } from 'util';
 
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
@@ -24,10 +25,13 @@ suite("Extension Tests", function () {
     });
 });
 suite("DotNetCoreFptAppMapper", function() {
-
-    function createFakeExec(output : any){
+    const badObjectException = Error("A bad object was recieved from runCommand.");
+    function createFakeExec(output : any, outCommandObject? : {commandSupplied : string}){
         return async function(command: string):Promise<{stdout:string,stderr:string}>{
             let serializedObject = JSON.stringify(output);
+            if(outCommandObject !== undefined){
+                outCommandObject.commandSupplied = command;
+            }
             return {stdout:serializedObject,stderr:""};
         };
     }
@@ -65,7 +69,7 @@ suite("DotNetCoreFptAppMapper", function() {
             let fakeExec = createFakeExec(object);
             let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
             
-            return assert.rejects(function(){return mapper.getLevels();},Error("A bad object was recieved from runCommand."));
+            return assert.rejects(function(){return mapper.getLevels();},badObjectException);
         });
         test("return serialized level array", async function(){
             let object : Level[] = [{
@@ -86,6 +90,16 @@ suite("DotNetCoreFptAppMapper", function() {
 
             return assert.deepStrictEqual( await mapper.getLevels(),object);
         });
+        //test("")
     });
-    
+    suite("openLevel should", function(){
+        test("throw an error when the string recieved is faulty",function(){
+            let object : any = {Bad:"Object"};
+            let fakeExec = createFakeExec(object);
+            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
+
+            return assert.rejects(function(){return mapper.openLevel("","");});
+
+        });
+    })
 });
