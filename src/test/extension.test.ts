@@ -118,5 +118,16 @@ suite("DotNetCoreFptAppMapper", function() {
 
             assert.strictEqual(await mapper.openLevel("",""),object);
         });
+        test("supply correct command to exec",function(){
+            let object = "";
+            let suppliedCommandObject = {commandSupplied:""};
+            let fakeExec = createFakeExec(object,suppliedCommandObject);
+            let coreAppFile = "core";
+            let mapper = new DotNetCoreFPTAppMapper(coreAppFile,fakeExec);
+            let args = ["levelId","user"]
+            mapper.openLevel(args[0],args[1]);
+
+            return assert.strictEqual(suppliedCommandObject.commandSupplied,`dotnet ${coreAppFile} open ${args[0]} ${args[1]}`);
+        })
     });
 });
