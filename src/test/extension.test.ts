@@ -90,7 +90,17 @@ suite("DotNetCoreFptAppMapper", function() {
 
             return assert.deepStrictEqual( await mapper.getLevels(),object);
         });
-        //test("")
+        test("supply the correct command to exec",function(){
+            let object : Level[] = [];
+            let suppliedCommandObject = {commandSupplied:""};
+            let fakeExec = createFakeExec(object, suppliedCommandObject);
+            let coreAppFile = "core";
+            let mapper = new DotNetCoreFPTAppMapper(coreAppFile,fakeExec);
+
+            mapper.getLevels();
+
+            assert.strictEqual(suppliedCommandObject.commandSupplied,`dotnet ${coreAppFile} levels`);
+        })
     });
     suite("openLevel should", function(){
         test("throw an error when the string recieved is faulty",function(){
