@@ -124,10 +124,10 @@ suite("DotNetCoreFptAppMapper", function() {
             let fakeExec = createFakeExec(object,suppliedCommandObject);
             let coreAppFile = "core";
             let mapper = new DotNetCoreFPTAppMapper(coreAppFile,fakeExec);
-            let args = ["levelId","user"]
+            let args = ["levelId","user"];
             mapper.openLevel(args[0],args[1]);
 
             return assert.strictEqual(suppliedCommandObject.commandSupplied,`dotnet ${coreAppFile} open ${args[0]} ${args[1]}`);
-        })
+        });
     });
 });
