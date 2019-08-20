@@ -6,6 +6,8 @@ import * as path from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { parse } from 'url';
+import { stringify } from 'querystring';
+import { isWhitespace } from './FPTUtil';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -46,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 					return {label:value.Name,detail:value.Id};
 				});
 				let level = await vscode.window.showQuickPick(items,{canPickMany:false,});
-				if(level !== undefined && level.detail !== undefined && user !== undefined){
+				if(level !== undefined && level.detail !== undefined && !isWhitespace(level.detail) && user !== undefined && !isWhitespace(user)){
 					let projectFolder = await mapper.openLevel(level.detail,user);
 					vscode.commands.executeCommand("vscode.openFolder",vscode.Uri.file(projectFolder));
 				}else{
