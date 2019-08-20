@@ -100,7 +100,7 @@ suite("DotNetCoreFptAppMapper", function() {
             mapper.getLevels();
 
             assert.strictEqual(suppliedCommandObject.commandSupplied,`dotnet ${coreAppFile} levels`);
-        })
+        });
     });
     suite("openLevel should", function(){
         test("throw an error when the string recieved is faulty",function(){
@@ -111,5 +111,12 @@ suite("DotNetCoreFptAppMapper", function() {
             return assert.rejects(function(){return mapper.openLevel("","");});
 
         });
-    })
+        test("return serialized path to project folder",async function(){
+            let object = "doodle";
+            let fakeExec = createFakeExec(object);
+            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
+
+            assert.strictEqual(await mapper.openLevel("",""),object);
+        });
+    });
 });
