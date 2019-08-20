@@ -27,7 +27,7 @@ suite("Extension Tests", function () {
 suite("DotNetCoreFptAppMapper", function() {
     const badObjectException = Error("A bad object was recieved from runCommand.");
     function createFakeExec(output : any, outCommandObject? : {commandSupplied : string}){
-        return async function(command: string):Promise<{stdout:string,stderr:string}>{
+        return async function(command: string,options : {cwd: string}):Promise<{stdout:string,stderr:string}>{
             let serializedObject = JSON.stringify(output);
             if(outCommandObject !== undefined){
                 outCommandObject.commandSupplied = command;
@@ -44,14 +44,14 @@ suite("DotNetCoreFptAppMapper", function() {
                 InnerException: null
             };
             let fakeExec = createFakeExec(exception);
-            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
+            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec, "");
             
             return assert.rejects(function(){ return mapper.runCommand(); },exception);
         });
         test("return deserialized object from serialized string",async function(){
             let object : any = {Lmfao:"bruh",IsNerd:true};
             let fakeExec =createFakeExec(object);
-            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
+            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec, "");
 
             return assert.deepStrictEqual(await mapper.runCommand(),object);
         });
@@ -63,11 +63,11 @@ suite("DotNetCoreFptAppMapper", function() {
                 Id:"yodel",
                 InstructionsFilepath:"yodel",
                 VerifierFilepath:"yodel",
-                FolderPath: "yodel"
+                FolderFilepath: "yodel"
             };
             let object : any[] = [level,"meep"];
             let fakeExec = createFakeExec(object);
-            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
+            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec, "");
             
             return assert.rejects(function(){return mapper.getLevels();},badObjectException);
         });
@@ -77,16 +77,16 @@ suite("DotNetCoreFptAppMapper", function() {
                 Id:"yodel",
                 InstructionsFilepath:"yodel",
                 VerifierFilepath:"yodel",
-                FolderPath:"yodel"
+                FolderFilepath:"yodel"
             },{
                 Name:"Bojack",
                 Id:"Horseman",
                 InstructionsFilepath:"Mr",
                 VerifierFilepath:"Adult",
-                FolderPath:"Man"
+                FolderFilepath:"Man"
             }];
             let fakeExec = createFakeExec(object);
-            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
+            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec, "");
 
             return assert.deepStrictEqual( await mapper.getLevels(),object);
         });
@@ -95,7 +95,7 @@ suite("DotNetCoreFptAppMapper", function() {
             let suppliedCommandObject = {commandSupplied:""};
             let fakeExec = createFakeExec(object, suppliedCommandObject);
             let coreAppFile = "core";
-            let mapper = new DotNetCoreFPTAppMapper(coreAppFile,fakeExec);
+            let mapper = new DotNetCoreFPTAppMapper(coreAppFile,fakeExec, "");
 
             mapper.getLevels();
 
@@ -106,7 +106,7 @@ suite("DotNetCoreFptAppMapper", function() {
         test("throw an error when the string recieved is faulty",function(){
             let object : any = {Bad:"Object"};
             let fakeExec = createFakeExec(object);
-            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
+            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec, "");
 
             return assert.rejects(function(){return mapper.openLevel("","");});
 
@@ -114,7 +114,7 @@ suite("DotNetCoreFptAppMapper", function() {
         test("return serialized path to project folder",async function(){
             let object = "doodle";
             let fakeExec = createFakeExec(object);
-            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec);
+            let mapper = new DotNetCoreFPTAppMapper(".",fakeExec, "");
 
             assert.strictEqual(await mapper.openLevel("",""),object);
         });
@@ -123,7 +123,7 @@ suite("DotNetCoreFptAppMapper", function() {
             let suppliedCommandObject = {commandSupplied:""};
             let fakeExec = createFakeExec(object,suppliedCommandObject);
             let coreAppFile = "core";
-            let mapper = new DotNetCoreFPTAppMapper(coreAppFile,fakeExec);
+            let mapper = new DotNetCoreFPTAppMapper(coreAppFile,fakeExec, "");
             let args = ["levelId","user"];
             mapper.openLevel(args[0],args[1]);
 

@@ -4,18 +4,20 @@ import { promisify } from "util";
 import { isFPTException, FPTException } from "./FPTException";
 import { Level, isLevel } from "./Level";
 
-export type promisifiedExec = {(command: string): Promise<{stdout: string, stderr: string}>};
+export type promisifiedExec = {(command: string, options : {cwd: string}): Promise<{stdout: string, stderr: string}>};
 
 export class DotNetCoreFPTAppMapper implements FPTAppMapper{
-    private readonly appPath : string;
+    private readonly corePath : string;
     private readonly promisifiedExec : promisifiedExec;
-    constructor(appPath :string, promisifiedExec : promisifiedExec){
-        this.appPath = appPath;
+    private readonly extensionPath : string;
+    constructor(corePath :string, promisifiedExec : promisifiedExec,extensionPath : string){
+        this.corePath = corePath;
         this.promisifiedExec = promisifiedExec;
+        this.extensionPath = extensionPath;
     }
     async runCommand(...args : string[]){
         
-        const {stdout} = await this.promisifiedExec(["dotnet",this.appPath].concat(args).join(' '));
+        const {stdout} = await this.promisifiedExec(["dotnet",this.corePath].concat(args).join(' '),{cwd:this.extensionPath});
         const result = JSON.parse(stdout);
         if(isFPTException(result)){
             let error = result as FPTException;

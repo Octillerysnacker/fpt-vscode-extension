@@ -3,7 +3,7 @@ export interface Level{
     readonly Id : string;
     readonly VerifierFilepath : string;
     readonly InstructionsFilepath : string;
-    readonly FolderPath : string;
+    readonly FolderFilepath : string;
 }
 export function isLevel(object : any):object is Level{
     let testObject = object as Level;
@@ -11,5 +11,5 @@ export function isLevel(object : any):object is Level{
     testObject.Id !== undefined &&
     testObject.VerifierFilepath !== undefined &&
     testObject.InstructionsFilepath !== undefined &&
-    testObject.FolderPath !== undefined;
+    testObject.FolderFilepath !== undefined;
 }
