@@ -15,6 +15,7 @@ export class DotNetCoreFPTAppMapper{
             if(e instanceof SyntaxError){
                 throw new FPTInternalError("A bad result was recieved from the main FPT app.",e);
             }
+            throw e;
         }
     }
 }
