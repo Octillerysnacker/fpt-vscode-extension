@@ -5,7 +5,7 @@
 
 // The module 'assert' provides assertion methods from node
 import * as assert from 'assert';
-import { DotNetCoreFPTAppMapper } from '../DotNetCoreFPTAppMapper';
+import { DotNetCoreFPTApp } from '../DotNetCoreFPTApp';
 import { FPTInternalError } from '../FPTInternalError';
 
 // You can import and use all API from the 'vscode' module
@@ -14,7 +14,7 @@ import { FPTInternalError } from '../FPTInternalError';
 // import * as myExtension from '../extension';
 type promisifiedExec = () => Promise<{stdout:string}>;
 
-describe("DotNetCoreFPTAppMapper", function(){
+describe("DotNetCoreFPTApp", function(){
     describe("runAsync", function(){
         describe("should deserialize and return serialized object",function(){
             let dataset : any[]= [{Hi:"pie",Id:"random"},"The quick rown fox",1,3.14];
@@ -24,9 +24,9 @@ describe("DotNetCoreFPTAppMapper", function(){
                     let fakeExec : promisifiedExec= async function(){
                         return {stdout:JSON.stringify(data)};
                     };
-                    let mapper = new DotNetCoreFPTAppMapper(fakeExec);
+                    let app = new DotNetCoreFPTApp(fakeExec);
             
-                    let result = await mapper.runAsync();
+                    let result = await app.runAsync();
             
                     assert.deepStrictEqual(result,data);
                 };
@@ -44,9 +44,9 @@ describe("DotNetCoreFPTAppMapper", function(){
                     let fakeExec : promisifiedExec = async function(){
                         return {stdout:data};
                     };
-                    let mapper = new DotNetCoreFPTAppMapper(fakeExec);
+                    let app = new DotNetCoreFPTApp(fakeExec);
                     
-                    return assert.rejects(mapper.runAsync(),function(e : any){
+                    return assert.rejects(app.runAsync(),function(e : any){
                         assert.ok(e instanceof FPTInternalError);
                         assert.ok(e.InnerError instanceof SyntaxError);
                         assert.strictEqual(e.message,"A bad result was recieved from the main FPT app.");
@@ -69,9 +69,9 @@ describe("DotNetCoreFPTAppMapper", function(){
                         throw data;
                     };
 
-                    let mapper = new DotNetCoreFPTAppMapper(fakeExec);
+                    let app = new DotNetCoreFPTApp(fakeExec);
 
-                    return assert.rejects(mapper.runAsync(),data);
+                    return assert.rejects(app.runAsync(),data);
                 };
             };
 

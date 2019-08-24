@@ -2,7 +2,7 @@ import { FPTInternalError } from "./FPTInternalError";
 
 type promisifedExec = () => Promise<{stdout:string}>;
 
-export class DotNetCoreFPTAppMapper{
+export class DotNetCoreFPTApp{
     private exec : promisifedExec;
     constructor(exec : promisifedExec){
         this.exec = exec;
