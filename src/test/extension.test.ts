@@ -12,7 +12,7 @@ import { FPTInternalError } from '../FPTInternalError';
 // as well as import your extension to test it
 // import * as vscode from 'vscode';
 // import * as myExtension from '../extension';
-type promisifiedExec = (command: string, options?: { cwd?: string }) => Promise<{ stdout: string }>;
+type promisifiedExec = (command: string, options?: { cwd?: string }) => Promise<{ stdout: string, stderr: string }>;
 
 describe("DotNetCoreFPTApp", function () {
     describe("runAsync", function () {
@@ -22,7 +22,7 @@ describe("DotNetCoreFPTApp", function () {
             let getTest = (data: any) => {
                 return async function () {
                     let fakeExec: promisifiedExec = async function () {
-                        return { stdout: JSON.stringify(data) };
+                        return { stdout: JSON.stringify(data), stderr: "" };
                     };
                     let app = new DotNetCoreFPTApp(fakeExec, "", "");
 
@@ -42,7 +42,7 @@ describe("DotNetCoreFPTApp", function () {
             let getTest = (data: string) => {
                 return async function () {
                     let fakeExec: promisifiedExec = async function () {
-                        return { stdout: data };
+                        return { stdout: data, stderr: "" };
                     };
                     let app = new DotNetCoreFPTApp(fakeExec, "", "");
 
@@ -107,7 +107,7 @@ describe("DotNetCoreFPTApp", function () {
                     let result: string = "";
                     let fakeExec: promisifiedExec = async function (command: string) {
                         result = command;
-                        return { stdout: "{}" };
+                        return { stdout: "{}", stderr: "" };
                     };
                     let app = new DotNetCoreFPTApp(fakeExec, data.AppFilePath, "");
 
@@ -131,13 +131,31 @@ describe("DotNetCoreFPTApp", function () {
                         if (options !== undefined) {
                             result = options.cwd;
                         }
-                        return { stdout: "{}" };
+                        return { stdout: "{}", stderr: "" };
                     };
                     let app = new DotNetCoreFPTApp(fakeExec, "", data);
 
                     await app.runAsync();
 
                     assert.strictEqual(result, data);
+                };
+            };
+
+            dataset.forEach(data => {
+                it(JSON.stringify(data), getTest(data));
+            });
+        });
+        describe("throws everything sent to stderr", function () {
+            let dataset: any[] = [false, {}, { some: "body", once: 101, told: true }, 404];
+
+            let getTest = (data: any) => {
+                return function () {
+                    let fakeExec: promisifiedExec = async function (command: string, options?: { cwd?: string }) {
+                        return { stdout: "", stderr: JSON.stringify(data) };
+                    };
+                    let app = new DotNetCoreFPTApp(fakeExec, "", "");
+
+                    return assert.rejects(app.runAsync(), data);
                 };
             };
 

@@ -1,6 +1,6 @@
 import { FPTInternalError } from "./FPTInternalError";
 
-type promisifedExec = (command: string, options?: { cwd?: string }) => Promise<{ stdout: string }>;
+type promisifedExec = (command: string, options?: { cwd?: string }) => Promise<{ stdout: string, stderr: string }>;
 
 export class DotNetCoreFPTApp {
     private exec: promisifedExec;
@@ -13,8 +13,11 @@ export class DotNetCoreFPTApp {
     }
     public async runAsync(...command: string[]) {
 
-        let result = await this.exec(["dotnet", this.appFilePath].concat(command).join(' '),{cwd:this.cwd});
+        let result = await this.exec(["dotnet", this.appFilePath].concat(command).join(' '), { cwd: this.cwd });
         try {
+            if (result.stderr.trim() !== "") {
+                throw JSON.parse(result.stderr);
+            }
             return JSON.parse(result.stdout);
         } catch (e) {
             if (e instanceof SyntaxError) {
