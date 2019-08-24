@@ -60,5 +60,24 @@ describe("DotNetCoreFPTAppMapper", function(){
                 it(JSON.stringify(data),getTest(data));
             });
         });
+        describe("does not swallow unknown exceptions",function(){
+            let dataset : Error[] = [new Error(),new EvalError(),new RangeError()];
+
+            let getTest = (data : Error) => {
+                return async function(){
+                    let fakeExec : promisifiedExec = async function(){
+                        throw data;
+                    };
+
+                    let mapper = new DotNetCoreFPTAppMapper(fakeExec);
+
+                    return assert.rejects(mapper.runAsync(),data);
+                };
+            };
+
+            dataset.forEach(data => {
+                it(JSON.stringify(data),getTest(data));
+            });
+        });
     });
 });
