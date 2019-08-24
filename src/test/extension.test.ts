@@ -12,7 +12,7 @@ import { FPTInternalError } from '../FPTInternalError';
 // as well as import your extension to test it
 // import * as vscode from 'vscode';
 // import * as myExtension from '../extension';
-type promisifiedExec = (command: string) => Promise<{ stdout: string }>;
+type promisifiedExec = (command: string, options?: { cwd?: string }) => Promise<{ stdout: string }>;
 
 describe("DotNetCoreFPTApp", function () {
     describe("runAsync", function () {
@@ -24,7 +24,7 @@ describe("DotNetCoreFPTApp", function () {
                     let fakeExec: promisifiedExec = async function () {
                         return { stdout: JSON.stringify(data) };
                     };
-                    let app = new DotNetCoreFPTApp(fakeExec, "");
+                    let app = new DotNetCoreFPTApp(fakeExec, "", "");
 
                     let result = await app.runAsync();
 
@@ -44,7 +44,7 @@ describe("DotNetCoreFPTApp", function () {
                     let fakeExec: promisifiedExec = async function () {
                         return { stdout: data };
                     };
-                    let app = new DotNetCoreFPTApp(fakeExec, "");
+                    let app = new DotNetCoreFPTApp(fakeExec, "", "");
 
                     return assert.rejects(app.runAsync(), function (e: any) {
                         assert.ok(e instanceof FPTInternalError);
@@ -69,7 +69,7 @@ describe("DotNetCoreFPTApp", function () {
                         throw data;
                     };
 
-                    let app = new DotNetCoreFPTApp(fakeExec, "");
+                    let app = new DotNetCoreFPTApp(fakeExec, "", "");
 
                     return assert.rejects(app.runAsync(), data);
                 };
@@ -109,11 +109,35 @@ describe("DotNetCoreFPTApp", function () {
                         result = command;
                         return { stdout: "{}" };
                     };
-                    let app = new DotNetCoreFPTApp(fakeExec, data.AppFilePath);
+                    let app = new DotNetCoreFPTApp(fakeExec, data.AppFilePath, "");
 
                     await app.runAsync(...data.CommandArray);
 
                     assert.strictEqual(result, data.Expected);
+                };
+            };
+
+            dataset.forEach(data => {
+                it(JSON.stringify(data), getTest(data));
+            });
+        });
+        describe("correctly sets cwd for exec", function () {
+            let dataset: string[] = ["cwd1", "lmao", "bruh", "another"];
+
+            let getTest = (data: string) => {
+                return async function () {
+                    let result: string | undefined;
+                    let fakeExec: promisifiedExec = async function (command: string, options?: { cwd?: string }) {
+                        if (options !== undefined) {
+                            result = options.cwd;
+                        }
+                        return { stdout: "{}" };
+                    };
+                    let app = new DotNetCoreFPTApp(fakeExec, "", data);
+
+                    await app.runAsync();
+
+                    assert.strictEqual(result, data);
                 };
             };
 
