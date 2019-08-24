@@ -1,14 +1,17 @@
 import { FPTInternalError } from "./FPTInternalError";
 
-type promisifedExec = () => Promise<{stdout:string}>;
+type promisifedExec = (command: string) => Promise<{stdout:string}>;
 
 export class DotNetCoreFPTApp{
     private exec : promisifedExec;
-    constructor(exec : promisifedExec){
+    private appFilePath : string;
+    constructor(exec : promisifedExec, appFilePath : string){
         this.exec = exec;
+        this.appFilePath = appFilePath;
     }
-    public async runAsync(){
-        let result = await this.exec();
+    public async runAsync(...command : string[]){
+
+        let result = await this.exec(["dotnet",this.appFilePath].concat(command).join(' '));
         try{
             return JSON.parse(result.stdout);
         }catch(e){

@@ -12,7 +12,7 @@ import { FPTInternalError } from '../FPTInternalError';
 // as well as import your extension to test it
 // import * as vscode from 'vscode';
 // import * as myExtension from '../extension';
-type promisifiedExec = () => Promise<{stdout:string}>;
+type promisifiedExec = (command : string) => Promise<{stdout:string}>;
 
 describe("DotNetCoreFPTApp", function(){
     describe("runAsync", function(){
@@ -24,7 +24,7 @@ describe("DotNetCoreFPTApp", function(){
                     let fakeExec : promisifiedExec= async function(){
                         return {stdout:JSON.stringify(data)};
                     };
-                    let app = new DotNetCoreFPTApp(fakeExec);
+                    let app = new DotNetCoreFPTApp(fakeExec,"");
             
                     let result = await app.runAsync();
             
@@ -44,7 +44,7 @@ describe("DotNetCoreFPTApp", function(){
                     let fakeExec : promisifiedExec = async function(){
                         return {stdout:data};
                     };
-                    let app = new DotNetCoreFPTApp(fakeExec);
+                    let app = new DotNetCoreFPTApp(fakeExec,"");
                     
                     return assert.rejects(app.runAsync(),function(e : any){
                         assert.ok(e instanceof FPTInternalError);
@@ -69,7 +69,7 @@ describe("DotNetCoreFPTApp", function(){
                         throw data;
                     };
 
-                    let app = new DotNetCoreFPTApp(fakeExec);
+                    let app = new DotNetCoreFPTApp(fakeExec,"");
 
                     return assert.rejects(app.runAsync(),data);
                 };
@@ -78,6 +78,48 @@ describe("DotNetCoreFPTApp", function(){
             dataset.forEach(data => {
                 it(JSON.stringify(data),getTest(data));
             });
+        });
+        describe("sends correct command to exec",function(){
+            interface Data{
+                readonly CommandArray : string[];
+                readonly AppFilePath : string;
+                readonly Expected : string; 
+            }
+
+            let dataset : Data[] = [{
+                CommandArray:["some","lovely","parameters"],
+                AppFilePath:"some/file/path",
+                Expected:"dotnet some/file/path some lovely parameters"
+            },
+            {
+               CommandArray:["different","parameters","this","time"],
+               AppFilePath:"a different file path",
+               Expected:"dotnet a different file path different parameters this time" 
+            },
+        {
+            CommandArray:["yet another","test"],
+            AppFilePath:"again",
+            Expected:"dotnet again yet another test"
+        }];
+
+        let getTest = (data: Data) => {
+            return async function(){
+                let result : string = "";
+                let fakeExec : promisifiedExec = async function(command : string){
+                    result = command;
+                    return {stdout:"{}"};
+                };
+                let app = new DotNetCoreFPTApp(fakeExec, data.AppFilePath);
+
+                await app.runAsync(...data.CommandArray);
+
+                assert.strictEqual(result,data.Expected);
+            };
+        };
+
+        dataset.forEach(data => {
+            it(JSON.stringify(data),getTest(data));
+        });
         });
     });
 });
