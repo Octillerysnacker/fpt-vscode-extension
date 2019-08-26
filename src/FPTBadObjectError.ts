@@ -1,9 +1,7 @@
-export class FPTBadObjectError extends Error {
+export class FPTBadObjectError<T> extends Error {
     public readonly badObject: any;
-    public readonly expectedTypeName: string;
-    constructor(badObject: any, expectedTypeName: string, message?: string) {
+    constructor(badObject: any, message?: string) {
         super(message);
         this.badObject = badObject;
-        this.expectedTypeName = expectedTypeName;
     }
 }

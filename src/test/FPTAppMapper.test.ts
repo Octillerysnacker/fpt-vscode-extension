@@ -1,10 +1,11 @@
-import { ILevel } from "../ILevel";
+import { ILevel, isILevel } from "../ILevel";
 import { Random } from "random-js";
 import { createRandomLevel } from "../LevelExtensions";
 import * as assert from "assert";
 import { IFPTApp } from "../IFPTApp";
 import { FPTAppMapper } from "../FPTAppMapper";
 import { FPTBadObjectError } from "../FPTBadObjectError";
+import { isTArray } from "../FPTUtil";
 
 describe("FPTAppMapper", function () {
     describe("getLevels", function () {
@@ -44,7 +45,9 @@ describe("FPTAppMapper", function () {
 
             let getTest = function (data: any) {
                 return async function () {
-                    let expected = new FPTBadObjectError(data, "ILevel[]", "An object with an unexpected structure was recieved.");
+                    let expected = new FPTBadObjectError(
+                        data,
+                        "An object with an unexpected structure was recieved.");
                     let fakeFPTApp: IFPTApp = {
                         runAsync: async function () {
                             return data;
