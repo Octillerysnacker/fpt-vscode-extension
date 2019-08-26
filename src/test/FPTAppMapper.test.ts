@@ -4,6 +4,7 @@ import { createRandomLevel } from "../LevelExtensions";
 import * as assert from "assert";
 import { IFPTApp } from "../IFPTApp";
 import { FPTAppMapper } from "../FPTAppMapper";
+import { FPTBadObjectError } from "../FPTBadObjectError";
 
 describe("FPTAppMapper", function () {
     describe("getLevels", function () {
@@ -35,7 +36,28 @@ describe("FPTAppMapper", function () {
             };
 
             dataset.forEach(data => {
-                it(JSON.stringify(data),getTest(data));
+                it(JSON.stringify(data), getTest(data));
+            });
+        });
+        describe("should throw when an incorrect object is given", function () {
+            let dataset: any[] = [{ Lmfao: "what" }, "brown fox", 333333, 3.14, new Error()];
+
+            let getTest = function (data: any) {
+                return async function () {
+                    let expected = new FPTBadObjectError(data, "ILevel[]", "An object with an unexpected structure was recieved.");
+                    let fakeFPTApp: IFPTApp = {
+                        runAsync: async function () {
+                            return data;
+                        }
+                    };
+                    let mapper = new FPTAppMapper(fakeFPTApp);
+
+                    return assert.rejects(function () { return mapper.getLevels(); }, expected);
+                };
+            };
+
+            dataset.forEach(data => {
+                it(JSON.stringify(data), getTest(data));
             });
         });
     });

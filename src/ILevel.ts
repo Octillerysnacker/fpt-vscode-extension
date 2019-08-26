@@ -6,3 +6,11 @@ export interface ILevel {
     readonly InstructionsFilepath: string;
     readonly InitializerFilepath: string;
 }
+export function isILevel(object: any): object is ILevel {
+    return object.Id !== undefined &&
+        object.Name !== undefined &&
+        object.FolderFilepath !== undefined &&
+        object.VerifierFilepath !== undefined &&
+        object.InstructionsFilepath !== undefined &&
+        object.InitializerFilepath !== undefined;
+}
