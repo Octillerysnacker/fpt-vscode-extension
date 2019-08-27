@@ -64,4 +64,30 @@ describe("FPTAppMapper", function () {
             });
         });
     });
+    describe("openLevel", function () {
+        describe("should return path to project folder from app", function () {
+            let random = new Random();
+            let makeData = () => random.string(25);
+            let dataset: string[] = [makeData(), makeData(), makeData(), makeData()];
+
+            let getTest = (data: string) => {
+                return async function () {
+                    let app: IFPTApp = {
+                        runAsync: async function (...command: string[]) {
+                            return data;
+                        }
+                    };
+                    let mapper = new FPTAppMapper(app);
+
+                    let result = await mapper.openLevel();
+
+                    assert.strictEqual(result, data);
+                };
+            };
+
+            dataset.forEach(data => {
+                it(data, getTest(data));
+            });
+        });
+    });
 });

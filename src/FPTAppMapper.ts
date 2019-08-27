@@ -16,4 +16,7 @@ export class FPTAppMapper {
         }
         throw new FPTBadObjectError(result, "An object with an unexpected structure was recieved.");
     }
+    public async openLevel() {
+        return this.fptApp.runAsync();
+    }
 }
