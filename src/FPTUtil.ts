@@ -6,40 +6,40 @@ export function isTArray<T>(objectArray: any, comparer: (object: any) => object 
 type looseObject = { [key: string]: any };
 
 export function createRandomObject(
-    random: Random, 
-    maxNestingLevel: number, 
-    minProperties: number, 
+    random: Random,
+    maxNestingLevel: number,
+    minProperties: number,
     maxProperties: number,
-    allowedObjects : {
+    allowedObjects: {
         makeBooleans?: boolean,
         makeIntegers?: boolean,
         makeStrings?: boolean,
         makeFloats?: boolean,
         makeObjects?: boolean,
     } = {
-        makeBooleans: true,
-        makeIntegers: true,
-        makeStrings: true,
-        makeFloats: true,
-        makeObjects: true
-    }) {
+            makeBooleans: true,
+            makeIntegers: true,
+            makeStrings: true,
+            makeFloats: true,
+            makeObjects: true
+        }) {
     let object: any;
     let b = 1000;//Random integer bounds. Totally arbritrary.
     let randomStringMaxLengths = 15;
     let options: ((() => boolean) | (() => number) | (() => string) | (() => looseObject))[] = [];
-    if(allowedObjects.makeBooleans){
+    if (allowedObjects.makeBooleans) {
         options.push(random.bool);
     }
-    if(allowedObjects.makeFloats){
+    if (allowedObjects.makeFloats) {
         options.push(() => random.real(-b, b));
     }
-    if(allowedObjects.makeIntegers){
+    if (allowedObjects.makeIntegers) {
         options.push(() => random.integer(-b, b));
     }
-    if(allowedObjects.makeObjects){
-        options.push(() => { return {}; });    
+    if (allowedObjects.makeObjects) {
+        options.push(() => { return {}; });
     }
-    if(allowedObjects.makeStrings){
+    if (allowedObjects.makeStrings) {
         options.push(() => random.string(random.integer(0, randomStringMaxLengths)));
     }
 
