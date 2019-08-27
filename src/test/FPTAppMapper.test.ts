@@ -5,7 +5,7 @@ import * as assert from "assert";
 import { IFPTApp } from "../IFPTApp";
 import { FPTAppMapper } from "../FPTAppMapper";
 import { FPTBadObjectError } from "../FPTBadObjectError";
-import { isTArray } from "../FPTUtil";
+import { isTArray, createRandomObject } from "../FPTUtil";
 
 describe("FPTAppMapper", function () {
     describe("getLevels", function () {
@@ -132,6 +132,28 @@ describe("FPTAppMapper", function () {
                     } catch (e) { //we expect an error to be thrown because an incorrect datatype was given
                         assert.deepStrictEqual(result, ["open", data.level, data.user]);
                     }
+                };
+            };
+
+            dataset.forEach(data => {
+                it(JSON.stringify(data), getTest(data));
+            });
+        });
+        describe("should throw when an incorrect object is given", function () {
+            let random = new Random();
+            let makeData = () => createRandomObject(random, 3, 0, 4, { makeStrings: false });
+            let dataset: any[] = [makeData(), makeData(), makeData(), makeData()];
+
+            let getTest = (data: any) => {
+                return async function () {
+                    let fakeFPTApp: IFPTApp = {
+                        runAsync: async function (...command: string[]) {
+                            return data;
+                        }
+                    };
+                    let mapper = new FPTAppMapper(fakeFPTApp);
+
+                    return assert.rejects(mapper.openLevel("", ""), new FPTBadObjectError(data, "An object with an unexpected structure was recieved."));
                 };
             };
 

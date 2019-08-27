@@ -9,14 +9,21 @@ export class FPTAppMapper {
     constructor(fptApp: IFPTApp) {
         this.fptApp = fptApp;
     }
+    private makeBadObjectError(result: any) {
+        return new FPTBadObjectError(result, "An object with an unexpected structure was recieved.");
+    }
     public async getLevels(): Promise<ILevel[]> {
         let result = await this.fptApp.runAsync("levels");
         if (isTArray(result, isILevel)) {
             return result;
         }
-        throw new FPTBadObjectError(result, "An object with an unexpected structure was recieved.");
+        throw this.makeBadObjectError(result);
     }
-    public async openLevel(levelId: string, user: string) {
-        return this.fptApp.runAsync("open", levelId, user);
+    public async openLevel(levelId: string, user: string): Promise<string> {
+        let result = await this.fptApp.runAsync("open", levelId, user);
+        if (isString(result)) {
+            return result;
+        }
+        throw this.makeBadObjectError(result);
     }
 }
