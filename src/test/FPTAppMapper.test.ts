@@ -63,6 +63,22 @@ describe("FPTAppMapper", function () {
                 it(JSON.stringify(data), getTest(data));
             });
         });
+        it("should send correct parameters to app", async function () {
+            let result: string[] = [];
+            let fakeFPTApp: IFPTApp = {
+                runAsync: async function (...command: string[]) {
+                    result = command;
+                }
+            };
+            let mapper = new FPTAppMapper(fakeFPTApp);
+
+            try {
+                await mapper.getLevels();
+                assert.fail("No error was thrown.");
+            } catch (e) {//error expected because an incorrect object is thrown
+                assert.deepStrictEqual(result, ["levels"]);
+            }
+        });
     });
     describe("openLevel", function () {
         describe("should return path to project folder from app", function () {
