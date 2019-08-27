@@ -79,7 +79,7 @@ describe("FPTAppMapper", function () {
                     };
                     let mapper = new FPTAppMapper(app);
 
-                    let result = await mapper.openLevel();
+                    let result = await mapper.openLevel("", "");
 
                     assert.strictEqual(result, data);
                 };
@@ -87,6 +87,40 @@ describe("FPTAppMapper", function () {
 
             dataset.forEach(data => {
                 it(data, getTest(data));
+            });
+        });
+        describe("should send the correct parameters to app", async function () {
+            type dataType = { level: string, user: string };
+            let random = new Random();
+            let makeData = () => {
+                return {
+                    level: random.string(15),
+                    user: random.string(15)
+                };
+            };
+            let dataset: dataType[] = [makeData(), makeData(), makeData(), makeData()];
+
+            let getTest = (data: dataType) => {
+                return async function () {
+                    let result: string[] = [];
+                    let fakeFPTApp: IFPTApp = {
+                        runAsync: async function (...command: string[]) {
+                            result = command;
+                        }
+                    };
+                    let mapper = new FPTAppMapper(fakeFPTApp);
+
+                    try {
+                        await mapper.openLevel(data.level, data.user);
+                        assert.fail("No error was thrown.");
+                    } catch (e) { //we expect an error to be thrown because an incorrect datatype was given
+                        assert.deepStrictEqual(result, ["open", data.level, data.user]);
+                    }
+                };
+            };
+
+            dataset.forEach(data => {
+                it(JSON.stringify(data), getTest(data));
             });
         });
     });
