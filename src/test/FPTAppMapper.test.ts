@@ -162,4 +162,80 @@ describe("FPTAppMapper", function () {
             });
         });
     });
+    describe("getInstructions", function () {
+        describe("should return instructions filepath", function () {
+            let random = new Random();
+            let makeData = () => random.string(35);
+            let dataset: string[] = [makeData(), makeData(), makeData(), makeData()];
+
+            let getTest = (data: string) => {
+                return async function () {
+                    let app: IFPTApp = {
+                        runAsync: async function (...command: string[]) {
+                            return data;
+                        }
+                    };
+                    let mapper = new FPTAppMapper(app);
+
+                    let result = await mapper.getInstructions("");
+
+                    assert.equal(result, data);
+                };
+            };
+
+            dataset.forEach((data) => {
+                it(data, getTest(data));
+            });
+        });
+        describe("should send correct parameters to app", function () {
+            let random = new Random();
+            let makeData = () => random.string(20);
+            let dataset: string[] = [makeData(), makeData(), makeData(), makeData()];
+
+            let getTest = (data: string) => {
+                return async function () {
+                    let result: string[] = [];
+                    let app: IFPTApp = {
+                        runAsync: async function (...command: string[]) {
+                            result = command;
+                        }
+                    };
+                    let mapper = new FPTAppMapper(app);
+
+                    try {
+                        await mapper.getInstructions(data);
+                        assert.fail("No error was thrown.");
+                    } catch{//we expect an error to be thrown since an incorrect object is returned
+                        assert.deepStrictEqual(result, ["instructions",data]);
+                    }
+                };
+            };
+
+            dataset.forEach(data => {
+                it(data, getTest(data));
+            });
+        });
+        describe("should throw when an incorrect object is given", function () {
+            let random = new Random();
+            let makeData = () => createRandomObject(random, 3, 0, 4, { makeStrings: false });
+            let dataset = [makeData(), makeData(), makeData(), makeData()];
+
+            let getTest = (data: any) => {
+                return async function () {
+                    let app: IFPTApp = {
+                        runAsync: async function (...command: string[]) {
+                            return data;
+                        }
+                    };
+                    let mapper = new FPTAppMapper(app);
+
+                    return assert.rejects(mapper.getInstructions(""), new FPTBadObjectError(data, "An object with an unexpected structure was recieved."));
+                };
+            };
+
+            dataset.forEach(data => {
+                it(JSON.stringify(data), getTest(data));
+            });
+        });
+    });
 });

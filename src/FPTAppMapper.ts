@@ -26,4 +26,11 @@ export class FPTAppMapper {
         }
         throw this.makeBadObjectError(result);
     }
+    public async getInstructions(levelId : string) {
+        let result = await this.fptApp.runAsync("instructions",levelId);
+        if(isString(result)){
+            return result;
+        }
+        throw this.makeBadObjectError(result);
+    }
 }
