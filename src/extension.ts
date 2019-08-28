@@ -7,7 +7,7 @@ import { promisify } from 'util';
 import { exec } from 'child_process';
 import * as path from "path";
 import { ILevel } from './ILevel';
-
+import {Marked} from "marked-ts";
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -57,7 +57,9 @@ export function activate(context: vscode.ExtensionContext) {
 			});
 			let item = await vscode.window.showQuickPick(items,{canPickMany : false,placeHolder: "Choose a level for instructions"});
 			if(item !== undefined && item.detail !== undefined){
-				vscode.window.showInformationMessage(await core.getInstructions(item.detail));
+				let path = core.getInstructions(item.detail);
+				let panel = vscode.window.createWebviewPanel("FPT","Instructions", vscode.ViewColumn.Beside); 
+				panel.webview.html = Marked.parse((await vscode.workspace.openTextDocument(await path)).getText());
 			}
 		})
 	);

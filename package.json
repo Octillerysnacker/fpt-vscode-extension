@@ -53,6 +53,7 @@
 	"dependencies": {
 		"@types/random-js": "^1.0.31",
 		"@types/randomstring": "^1.1.6",
+		"marked-ts": "^1.0.0-beta.4",
 		"random-js": "^2.1.0",
 		"randomstring": "^1.1.5"
 	}
