@@ -46,6 +46,19 @@ export function activate(context: vscode.ExtensionContext) {
 			if(item !== undefined && item.detail !== undefined && user !== undefined){
 				vscode.window.showInformationMessage(await core.openLevel(item.detail,user));
 			}
+		}),
+		vscode.commands.registerCommand("fpt.extension.getInstructions",async () =>{
+			let levels = await core.getLevels();
+			let items = levels.map((value:ILevel):vscode.QuickPickItem => {
+				return {
+					label:value.Name,
+					detail:value.Id
+				};
+			});
+			let item = await vscode.window.showQuickPick(items,{canPickMany : false,placeHolder: "Choose a level for instructions"});
+			if(item !== undefined && item.detail !== undefined){
+				vscode.window.showInformationMessage(await core.getInstructions(item.detail));
+			}
 		})
 	);
 }

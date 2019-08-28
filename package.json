@@ -12,7 +12,8 @@
 	"activationEvents": [
 		"onCommand:extension.helloWorld",
 		"onCommand:fpt.extension.getLevels",
-		"onCommand:fpt.extension.openLevel"
+		"onCommand:fpt.extension.openLevel",
+		"onCommand:fpt.extension.getInstructions"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -28,6 +29,10 @@
 			{
 				"command": "fpt.extension.openLevel",
 				"title": "FPT: Open Level"
+			},
+			{
+				"command": "fpt.extension.getInstructions",
+				"title": "FPT: Get Instructions"
 			}
 		]
 	},
