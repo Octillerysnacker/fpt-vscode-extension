@@ -1,6 +1,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { FPTAppMapper } from './FPTAppMapper';
+import { DotNetCoreFPTApp } from './DotNetCoreFPTApp';
+import { promisify } from 'util';
+import { exec } from 'child_process';
+import * as path from "path";
+import { ILevel } from './ILevel';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -21,6 +27,27 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(disposable);
+
+	let core = new FPTAppMapper(new DotNetCoreFPTApp(promisify(exec),context.asAbsolutePath(path.join("core","FPT.Core.MainApp.dll")),context.extensionPath));
+	context.subscriptions.push(
+		vscode.commands.registerCommand("fpt.extension.getLevels", async () =>{
+			vscode.window.showInformationMessage(JSON.stringify(await core.getLevels()));
+		}),
+		vscode.commands.registerCommand("fpt.extension.openLevel", async()=>{
+			let levels = core.getLevels();
+			let user = await vscode.window.showInputBox({prompt:"Enter username"});
+			let items = (await levels).map((value:ILevel):vscode.QuickPickItem => {
+				return {
+					label:value.Name,
+					detail:value.Id
+				};
+			});
+			let item = await vscode.window.showQuickPick(items,{canPickMany: false,placeHolder:"Choose a level"});
+			if(item !== undefined && item.detail !== undefined && user !== undefined){
+				vscode.window.showInformationMessage(await core.openLevel(item.detail,user));
+			}
+		})
+	);
 }
 
 // this method is called when your extension is deactivated
