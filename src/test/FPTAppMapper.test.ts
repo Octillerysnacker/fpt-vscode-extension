@@ -206,7 +206,7 @@ describe("FPTAppMapper", function () {
                         await mapper.getInstructions(data);
                         assert.fail("No error was thrown.");
                     } catch{//we expect an error to be thrown since an incorrect object is returned
-                        assert.deepStrictEqual(result, ["instructions",data]);
+                        assert.deepStrictEqual(result, ["instructions", data]);
                     }
                 };
             };
