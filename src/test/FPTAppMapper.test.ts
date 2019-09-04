@@ -1,11 +1,14 @@
 import { ILevel, isILevel } from "../ILevel";
-import { Random } from "random-js";
+import { Random, string } from "random-js";
 import { createRandomLevel } from "../LevelExtensions";
 import * as assert from "assert";
 import { IFPTApp } from "../IFPTApp";
 import { FPTAppMapper } from "../FPTAppMapper";
 import { FPTBadObjectError } from "../FPTBadObjectError";
-import { isTArray, createRandomObject } from "../FPTUtil";
+import { isTArray, createRandomObject, createRandomArrayOf } from "../FPTUtil";
+import { VerifierResult } from "../verification/VerifierResult";
+import { randomBytes } from "crypto";
+import { createRandomVerifierResult } from "../verification/VerifierResultExtensions";
 
 describe("FPTAppMapper", function () {
     describe("getLevels", function () {
@@ -235,6 +238,86 @@ describe("FPTAppMapper", function () {
 
             dataset.forEach(data => {
                 it(JSON.stringify(data), getTest(data));
+            });
+        });
+    });
+    describe("verify", function () {
+        describe("should return verifier result from app", function () {
+            let random = new Random();
+            let dataset = createRandomArrayOf<VerifierResult>(4, () => createRandomVerifierResult(random));
+
+            let getTest = (data: VerifierResult) => {
+                return async function () {
+                    let app: IFPTApp = {
+                        runAsync: async function () {
+                            return data;
+                        }
+                    };
+                    let mapper = new FPTAppMapper(app);
+
+                    let result = await mapper.verify("", "");
+
+                    assert.deepStrictEqual(result, data);
+                };
+            };
+
+            dataset.forEach(data => {
+                it(JSON.stringify(data), getTest(data));
+            });
+        });
+        describe("should send the correct parameters to app", function () {
+            type levelUserPair = { levelId: string, user: string };
+            let random = new Random();
+            let dataset = createRandomArrayOf<levelUserPair>(4, () => {
+                return {
+                    levelId: random.string(10),
+                    user: random.string(10)
+                };
+            });
+
+            let getTest = (data: levelUserPair) => {
+                return async function () {
+                    let result: string[] = [];
+                    let app: IFPTApp = {
+                        runAsync: async function (...command: string[]) : Promise<VerifierResult>{
+                            result = command;
+                            return {
+                                Success: true,
+                                Diagnostics: []
+                            };
+                        }
+                    };
+                    let mapper = new FPTAppMapper(app);
+
+                    await mapper.verify(data.levelId, data.user);
+
+                    assert.deepStrictEqual(result, ["verify",data.levelId,data.user]);
+                };
+            };
+
+            dataset.forEach(data => {
+                it(JSON.stringify(data), getTest(data));
+            });
+        });
+        describe("should throw when an incorrect object is given", function () {
+            let random = new Random();
+            let dataset = createRandomArrayOf<any>(4, () => createRandomObject(random, 3, 0, 4));
+
+            let getTest = (data: any) => {
+                return async function () {
+                    let app: IFPTApp = {
+                        runAsync: async function () {
+                            return data;
+                        }
+                    };
+                    let mapper = new FPTAppMapper(app);
+
+                    return assert.rejects(mapper.verify("", ""), new FPTBadObjectError(data, "An object with an unexpected structure was recieved."));
+                };
+            };
+
+            dataset.forEach(data => {
+                it(JSON.stringify(data),getTest(data));
             });
         });
     });
