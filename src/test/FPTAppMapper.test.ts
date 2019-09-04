@@ -1,11 +1,11 @@
-import { ILevel, isILevel } from "../ILevel";
+import { ILevel, isILevel } from "../models/ILevel";
 import { Random, string } from "random-js";
-import { createRandomLevel } from "../LevelExtensions";
+import { createRandomLevel } from "../utilities/LevelExtensions";
 import * as assert from "assert";
-import { IFPTApp } from "../IFPTApp";
-import { FPTAppMapper } from "../FPTAppMapper";
-import { FPTBadObjectError } from "../FPTBadObjectError";
-import { isTArray, createRandomObject, createRandomArrayOf } from "../FPTUtil";
+import { IFPTApp } from "../app/IFPTApp";
+import { FPTAppMapper } from "../app/FPTAppMapper";
+import { FPTBadObjectError } from "../error/FPTBadObjectError";
+import { isTArray, createRandomObject, createRandomArrayOf } from "../utilities/FPTUtil";
 import { VerifierResult } from "../verification/VerifierResult";
 import { randomBytes } from "crypto";
 import { createRandomVerifierResult } from "../verification/VerifierResultExtensions";

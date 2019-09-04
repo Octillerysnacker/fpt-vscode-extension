@@ -1,12 +1,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { FPTAppMapper } from './FPTAppMapper';
-import { DotNetCoreFPTApp } from './DotNetCoreFPTApp';
+import { FPTAppMapper } from './app/FPTAppMapper';
+import { DotNetCoreFPTApp } from './app/DotNetCoreFPTApp';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import * as path from "path";
-import { ILevel } from './ILevel';
+import { ILevel } from './models/ILevel';
 import {Marked} from "marked-ts";
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed

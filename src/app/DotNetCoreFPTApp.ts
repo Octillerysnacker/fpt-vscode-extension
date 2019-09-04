@@ -1,4 +1,4 @@
-import { FPTInternalError } from "./FPTInternalError";
+import { FPTInternalError } from "../error/FPTInternalError";
 
 type promisifedExec = (command: string, options?: { cwd?: string }) => Promise<{ stdout: string, stderr: string }>;
 

@@ -1,4 +1,4 @@
-import { ILevel } from "./ILevel";
+import { ILevel } from "../models/ILevel";
 import { Random } from "random-js";
 export function createRandomLevel(random: Random, fieldLengths: number): ILevel {
     return {

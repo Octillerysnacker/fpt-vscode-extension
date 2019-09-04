@@ -1,9 +1,9 @@
 import { IFPTApp } from "./IFPTApp";
-import { ILevel, isILevel } from "./ILevel";
-import { FPTBadObjectError } from "./FPTBadObjectError";
+import { ILevel, isILevel } from "../models/ILevel";
+import { FPTBadObjectError } from "../error/FPTBadObjectError";
 import { isArray, isString } from "util";
-import { isTArray } from "./FPTUtil";
-import { isVerifierResult } from "./verification/VerifierResult";
+import { isTArray } from "../utilities/FPTUtil";
+import { isVerifierResult } from "../verification/VerifierResult";
 
 export class FPTAppMapper {
     private fptApp: IFPTApp;
