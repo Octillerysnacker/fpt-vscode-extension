@@ -59,3 +59,11 @@ export function createRandomObject(
     }
     return result;
 }
+
+export function createRandomArrayOf<T>(length: number, randomObjectCreator: () => T): T[]{
+    let array : T[] = [];
+    for(let i = 0;i<length;i++){
+        array.push(randomObjectCreator());
+    }
+    return array;
+}
