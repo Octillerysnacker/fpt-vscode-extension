@@ -58,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
 			let item = await vscode.window.showQuickPick(items,{canPickMany : false,placeHolder: "Choose a level for instructions"});
 			if(item !== undefined && item.detail !== undefined){
 				let path = core.getInstructions(item.detail);
-				let panel = vscode.window.createWebviewPanel("FPT","Instructions", vscode.ViewColumn.Beside); 
+				let panel = vscode.window.createWebviewPanel("FPT","Instructions", vscode.ViewColumn.Two); 
 				panel.webview.html = Marked.parse((await vscode.workspace.openTextDocument(await path)).getText());
 			}
 		})
