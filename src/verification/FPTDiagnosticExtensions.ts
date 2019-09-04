@@ -1,5 +1,5 @@
 import { FPTDiagnostic, FileLocation } from "./FPTDiagnostic";
-
+import {Random} from "random-js"
 export function createRandomFPTDiagnostic(random: Random): FPTDiagnostic{
     return {
         Message: random.string(15),
