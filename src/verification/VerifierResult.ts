@@ -1,5 +1,5 @@
 import { FPTDiagnostic, isFPTDiagnostic } from "./FPTDiagnostic";
-import { isTArray } from "./FPTUtil";
+import { isTArray } from "../FPTUtil";
 
 export interface VerifierResult{
     readonly Success : boolean;
