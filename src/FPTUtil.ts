@@ -23,7 +23,7 @@ export function createRandomObject(
             makeStrings?: boolean,
             makeFloats?: boolean,
             makeObjects?: boolean,
-        }) {
+        } = {}) {
     let object: any;
     let b = 1000;//Random integer bounds. Totally arbritrary.
     let randomStringMaxLengths = 15;
