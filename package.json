@@ -11,10 +11,12 @@
 	],
 	"activationEvents": [
 		"onCommand:extension.helloWorld",
-		"onCommand:fpt.extension.userFacing.getLevels",
-		"onCommand:fpt.extension.userFacing.openLevel",
-		"onCommand:fpt.extension.userFacing.getInstructions",
-		"onCommand:fpt.extension.userFacing.verify"
+		"onCommand:fpt.openLevel",
+		"onCommand:fpt.userFacing.openLevel",
+		"onCommand:fpt.getInstructions",
+		"onCommand:fpt.userFacing.getInstructions",
+		"onCommand:fpt.verify",
+		"workspaceContains:fpt.json"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -24,19 +26,19 @@
 				"title": "Hello World"
 			},
 			{
-				"command": "fpt.extension.userFacing.getLevels",
+				"command": "fpt.userFacing.getLevels",
 				"title": "FPT: Get Levels"
 			},
 			{
-				"command": "fpt.extension.userFacing.openLevel",
+				"command": "fpt.userFacing.openLevel",
 				"title": "FPT: Open Level"
 			},
 			{
-				"command": "fpt.extension.userFacing.getInstructions",
+				"command": "fpt.userFacing.getInstructions",
 				"title": "FPT: Get Instructions"
 			},
 			{
-				"command": "fpt.extension.userFacing.verify",
+				"command": "fpt.userFacing.verify",
 				"title": "FPT: Verify Level"
 			}
 		]
