@@ -51,16 +51,17 @@
 		"test": "npm run compile && node ./node_modules/vscode/bin/test"
 	},
 	"devDependencies": {
-		"typescript": "^3.3.1",
-		"vscode": "^1.1.28",
-		"tslint": "^5.12.1",
-		"@types/node": "^10.12.21",
-		"@types/mocha": "^2.2.42"
+		"@types/mocha": "^2.2.42",
+		"@types/node": "^10.14.22",
+		"tslint": "^5.20.0",
+		"typescript": "^3.6.4"
 	},
 	"dependencies": {
 		"@types/random-js": "^1.0.31",
 		"@types/randomstring": "^1.1.6",
+		"@types/vscode": "^1.39.0",
 		"marked-ts": "^1.0.0-beta.4",
-		"random-js": "^2.1.0"
+		"random-js": "^2.1.0",
+		"vscode-test": "^1.2.0"
 	}
 }
