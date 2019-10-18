@@ -58,14 +58,15 @@ export class ViewModel {
         }
     }
     public openInstructions = async (levelId: string, user: string) => {
-        let path = this.core.getInstructions(levelId);
+        let instructinosPath = this.core.getInstructions(levelId);
 
         let panel = vscode.window.createWebviewPanel("FPT", "Instructions", vscode.ViewColumn.Two,{enableCommandUris:true});
 
         let html = `
         <!DOCTYPE html>
         <body>
-        ${Marked.parse((await vscode.workspace.openTextDocument(await path)).getText())}
+        <base href='${panel.webview.asWebviewUri(vscode.Uri.file(path.dirname(await instructinosPath)))}'/>
+        ${Marked.parse((await vscode.workspace.openTextDocument(await instructinosPath)).getText())}
         <a href='command:fpt.verify?${encodeURIComponent(JSON.stringify([levelId, user]))}'>Verify Code</a>
         </body>
         `;
