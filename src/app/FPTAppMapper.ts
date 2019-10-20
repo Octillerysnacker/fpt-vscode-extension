@@ -41,4 +41,7 @@ export class FPTAppMapper {
         }
         throw this.makeBadObjectError(result);
     }
+    public async reset(levelId : string, user : string){
+        return this.fptApp.runAsync("reset",levelId,user);
+    }
 }

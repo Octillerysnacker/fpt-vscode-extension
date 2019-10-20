@@ -10,6 +10,8 @@ import { VerifierResult } from "../../verification/VerifierResult";
 import { randomBytes } from "crypto";
 import { createRandomVerifierResult } from "../../verification/VerifierResultExtensions";
 
+type levelUserPair = { levelId: string, user: string };
+
 describe("FPTAppMapper", function () {
     describe("getLevels", function () {
         describe("should return all levels from app", function () {
@@ -266,7 +268,6 @@ describe("FPTAppMapper", function () {
             });
         });
         describe("should send the correct parameters to app", function () {
-            type levelUserPair = { levelId: string, user: string };
             let random = new Random();
             let dataset = createRandomArrayOf<levelUserPair>(4, () => {
                 return {
@@ -318,6 +319,37 @@ describe("FPTAppMapper", function () {
 
             dataset.forEach(data => {
                 it(JSON.stringify(data),getTest(data));
+            });
+        });
+    });
+    describe("reset",function(){
+        describe("should send correct parameters to app", function(){
+            let random = new Random();
+            let dataset = createRandomArrayOf<levelUserPair>(4, () =>{
+                return {
+                    levelId: random.string(10),
+                    user: random.string(10)
+                };
+            });
+
+            let getTest = (data: levelUserPair) => {
+                return async function(){
+                    let result: string[] = [];
+                    let app: IFPTApp = {
+                        runAsync: async function (...command: string[]){
+                            result = command;
+                        }
+                    };
+                    let mapper = new FPTAppMapper(app);
+
+                    await mapper.reset(data.levelId, data.user);
+
+                    assert.deepStrictEqual(result, ["reset",data.levelId,data.user]);
+                };
+            };
+
+            dataset.forEach(data => {
+                it(JSON.stringify(data), getTest(data));
             });
         });
     });
