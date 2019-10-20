@@ -16,6 +16,8 @@
 		"onCommand:fpt.getInstructions",
 		"onCommand:fpt.userFacing.getInstructions",
 		"onCommand:fpt.verify",
+		"onCommand:fpt.reset",
+		"onCommand:fpt.userFacing.reset",
 		"workspaceContains:fpt.json"
 	],
 	"main": "./out/extension.js",
@@ -40,6 +42,10 @@
 			{
 				"command": "fpt.userFacing.verify",
 				"title": "FPT: Verify Level"
+			},
+			{
+				"command": "fpt.userFacing.reset",
+				"title": "FPT: Reset Level"
 			}
 		]
 	},

@@ -37,6 +37,8 @@ export class ViewModel {
             this.registerCommand("fpt.openInstructions",this.openInstructions);
             this.registerCommand("fpt.userFacing.openInstructions",this.openInstructionsUserFacing);
             this.registerCommand("fpt.verify",this.verify);
+            this.registerCommand("fpt.reset", this.reset);
+            this.registerCommand("fpt.userFacing.reset", this.resetUserFacing);
             
     }
     public openLevelProjectFolder = async (levelId: string, user: string) => {
@@ -109,5 +111,18 @@ export class ViewModel {
     }
     private registerCommand = (command: string, callback: (...args : any[]) => any) => {
         this.context.subscriptions.push(vscode.commands.registerCommand(command,callback));
+    }
+    public reset = async (levelId: string, user: string) => {
+        await this.core.reset(levelId,user);
+        let message = `Reset command for ${user} has complete.`;
+        console.log(message);
+        vscode.window.showInformationMessage(message);
+    }
+    public resetUserFacing = async () =>{
+        let levelId = await this.quickPickLevel();
+        let user = await this.quickInputUsername();
+        if(levelId !== undefined && user !== undefined){
+            await this.reset(levelId,user);
+        }
     }
 }
